@@ -1,6 +1,7 @@
 #include "Widget.hpp"
 #include "Application.hpp"
 #include "Button.hpp"
+
 using namespace genv;
 using namespace std;
 
@@ -21,5 +22,5 @@ const void Button :: draw()
 
 void Button :: handle(event& ev)
 {
-
+    _functor();
 }

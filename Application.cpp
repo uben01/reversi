@@ -2,18 +2,9 @@
 #include "Application.hpp"
 #include "Widget.hpp"
 #include "Button.hpp"
+#include "iostream"
 
 using namespace genv;
-
-Application::Application(bool mode)
-{
-    if(!mode)
-    {
-        Widget* SinglePlayerButton = new Button(this, 800/2 - 200 / 2, 100, 200, 100, "Egyjátékos mód" );
-        Widget* MzultiPlayerButton = new Button(this, 800/2 - 200 / 2, 300, 200, 100, "Többjátékos mód");
-    }
-
-}
 
 void Application::add(Widget* w)
 {
@@ -30,6 +21,14 @@ void Application :: event_loop(event & ev)
 
     while(gin >> ev)
     {
-
+        if(ev.type == ev_mouse && ev.button == btn_left)
+        for(Widget * w : elements)
+        {
+            if(w->isOver(ev.pos_x, ev.pos_y))
+            {
+                w->handle(ev);
+                break;
+            }
+        }
     }
 }

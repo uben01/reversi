@@ -19,8 +19,9 @@ protected:
     Application* _parent;
 
 public:
-    Widget(Application * parent, const int& posx, const int& posy, const int& sizex, const int& sizey);
+    Widget(Application*, const int&, const int&, const int&, const int&);
 
+    const bool isOver(int, int);
     virtual const void draw() = 0;
     virtual void handle(event& ev) = 0;
 };
