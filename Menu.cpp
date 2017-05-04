@@ -5,15 +5,6 @@
 #include "iostream"
 #include "stdlib.h"
 
-void Menu::startSinglePlayer()
-{
-    cout << "SinglePlayer funkcio inditasa";
-}
-void Menu::startMultiPlayer()
-{
-    cout << "MultiPlayer funkcio inditasa";
-}
-
 Menu :: Menu()
 {
     Widget* SinglePlayerButton = new Button(this, 800/2 - 200 / 2,  50, 200, 100, "Egyjátékos mód",     [&](){this->startSinglePlayer();});
@@ -21,10 +12,30 @@ Menu :: Menu()
     Widget* ExitButton         = new Button(this, 800/2 - 200 / 2, 450, 200, 100, "Kilépés",            [](){exit(0);});
 }
 
-Menu :: ~Menu()
+void Menu::startSinglePlayer()
 {
-    for(Widget* w : elements)
+    cout << "SinglePlayer funkcio inditasa";
+    over = true;
+}
+void Menu::startMultiPlayer()
+{
+    cout << "MultiPlayer funkcio inditasa";
+}
+
+void Menu :: event_loop(event & ev)
+{
+    drawElements();
+
+    while(gin >> ev && !over)
     {
-        delete w;
+        if(ev.type == ev_mouse && ev.button == btn_left)
+        for(Widget * w : elements)
+        {
+            if(w->isOver(ev.pos_x, ev.pos_y))
+            {
+                w->handle(ev);
+                break;
+            }
+        }
     }
 }

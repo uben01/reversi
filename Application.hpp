@@ -15,9 +15,12 @@ protected:
     vector<Widget*> elements;
 
 public:
-    void add(Widget*);
+    ~Application();
 
-    void event_loop(event&);
+    void add(Widget*);
+    void drawElements();
+
+    virtual void event_loop(event&) = 0;
 
 };
 

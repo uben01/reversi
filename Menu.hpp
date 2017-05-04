@@ -5,9 +5,11 @@
 
 class Menu : public Application
 {
+    bool over = false;
 public:
     Menu();
-    ~Menu();
+
+    void event_loop(event&);
 
     void startSinglePlayer();
     void startMultiPlayer();

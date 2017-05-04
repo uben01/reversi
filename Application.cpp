@@ -6,29 +6,25 @@
 
 using namespace genv;
 
+Application::~Application()
+{
+    for(Widget* w : elements)
+    {
+        delete w;
+    }
+}
+
 void Application::add(Widget* w)
 {
     elements.push_back(w);
 }
 
-void Application :: event_loop(event & ev)
+void Application::drawElements()
 {
     for (int i = 0; i < elements.size(); i++)
     {
         elements[i]->draw();
     }
     gout << refresh;
-
-    while(gin >> ev)
-    {
-        if(ev.type == ev_mouse && ev.button == btn_left)
-        for(Widget * w : elements)
-        {
-            if(w->isOver(ev.pos_x, ev.pos_y))
-            {
-                w->handle(ev);
-                break;
-            }
-        }
-    }
 }
+
