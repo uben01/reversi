@@ -1,0 +1,14 @@
+*.exe
+*.cbp
+*.depend
+*.save
+*.a
+*.ttf
+*.dll
+*.o
+*.la
+bin/*
+include/*
+obj/*
+lib/*
+graphics.hpp
