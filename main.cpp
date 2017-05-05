@@ -7,7 +7,7 @@
 using namespace std;
 using namespace genv;
 
-const int XX = 800;
+const int XX = 1000;
 const int YY = 800;
 
 int main()

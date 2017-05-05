@@ -12,6 +12,8 @@ public:
     void event_loop(event&);
     bool getPlayer();
     void changePlayer();
+
+    bool isOrderly(int, int, int, int, int);
 };
 
 #endif // GAME_HPP_INCLUDED

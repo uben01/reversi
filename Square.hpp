@@ -12,9 +12,15 @@ class Square : public Widget
     bool owner; // false - fehér, true - fekete ---- Nincs jelentõsége amig az owner false
 
 public:
-    Square(Application*, const int&, const int&, const int&, const int&);
+    Square(Application*, const int&, const int&, const int&, const int&, const bool& = false, const bool& = false);
     const void draw();
     void handle(event&);
+
+    void setOccupied();
+    bool isOccupied();
+    void setOwner(const bool&);
+    bool getOwner();
+
 };
 
 #endif // SQUARE_HPP_INCLUDED
