@@ -2,8 +2,10 @@
 #include "Widget.hpp"
 #include "Game.hpp"
 #include "Square.hpp"
+#include "TextBox.hpp"
 #include "iostream"
 #include "stdlib.h"
+#include <sstream>
 
 int XX;
 int YY;
@@ -29,15 +31,21 @@ Game :: Game(const int& xx, const int& yy)
     }
 
 
+    ////////////////////////////////////////////
+    Widget* white_player_score = new TextBox(this, 800, 100, 200, 100, "", new rgb(0,0,0));
+    Widget* dark_player_score = new TextBox(this, 800, 200, 200, 100, "", new rgb(255,255,255));
+
+    Widget* message = new TextBox(this, 800, 600, 200, 100, "A jatek elkezdodott\nFeher kezd", new rgb(255,255,255));
 
 }
 
 void Game :: event_loop(event& ev)
 {
     gout << move_to(0,0)
-         << color(0,0,0)
+         << color(125,125,125)
          << box(XX, YY);
 
+    countPoints();
     drawElements();
 
     while(gin >> ev)
@@ -53,16 +61,27 @@ void Game :: event_loop(event& ev)
                     drawElements();
                     if(!canAct())
                     {
-                        /// egyik nem léphet
+                        string s = ((!activePlayer) ? "Feher" : "Fekete");
+                        string ns = ((activePlayer) ? "Feher" : "Fekete");
+                        string msg = s + " nem tud lepni\n" + ns + " kovetkezik";
+                        setMessage(msg);
+
                         changePlayer();
 
                         if(!canAct())
                         {
-                            exit(0);
-                            ///vége
+                            string s = ((countPoints()) ? "feher" : "fekete");
+                            string msg = "A jateknak vege, \n" + s + " nyert";
+                            setMessage(msg);
                         }
+                    } else
+                    {
+                        string s = ((!activePlayer) ? "Feher" : "Fekete");
+                        string msg = s + " kovetkezik";
+                        setMessage(msg);
                     }
-                    /// Jobb oldalra eredményjelzõ
+                    countPoints();
+                    break;
                 }
             }
         }
@@ -70,7 +89,7 @@ void Game :: event_loop(event& ev)
         {
             pp_clear();
             int x = ev.pos_x/squareSize, y = ev.pos_y/squareSize;
-            testElement(x, y);
+            if(x < 8 && x >= 0 && y < 8 && y >= 0) testElement(x, y);
             drawElements();
         }
     }
@@ -125,6 +144,7 @@ bool Game :: canAct()
 
 bool Game :: testElement(int x, int y)
 {
+    bool isGood = false;
     Square* element = dynamic_cast<Square*>(elements[y * 8 + x]);
     if(element && !element->isOccupied())
     {
@@ -134,12 +154,12 @@ bool Game :: testElement(int x, int y)
             {
                 if(i != 0 || j != 0)
                 {
-                    if(isOrderly(x, y, i, j, 1, true)) return true;
+                    if(isOrderly(x, y, i, j, 1, true)) isGood = true;
                 }
             }
         }
     }
-    return false;
+    return isGood;
 }
 
 void Game :: pp_add(int a)
@@ -155,4 +175,42 @@ void Game :: pp_clear()
 vector<int> Game :: get_pp()
 {
     return possible_positions;
+}
+
+
+bool Game :: countPoints()
+{
+    int dark  = 0;
+    int white = 0;
+    for(int i = 0; i < 8*8; i++)
+    {
+        Square* element = dynamic_cast<Square*>(elements[i]);
+        if(element && element->isOccupied())
+        {
+            if(element->getOwner()) white++;
+            else dark++;
+        }
+    }
+    TextBox* white_player_score = dynamic_cast<TextBox*>(elements[8*8]);
+    TextBox* dark_player_score = dynamic_cast<TextBox*>(elements[8*8 + 1]);
+
+    stringstream ss;
+    string score;
+    ss << white;
+    ss >> score;
+    white_player_score->setText( "Pont: " +  score );
+    ss.clear();
+
+    ss << dark;
+    ss >> score;
+    dark_player_score->setText( "Pont: " +  score );
+
+    return dark > white;
+}
+
+void Game :: setMessage(string s)
+{
+    TextBox* msgbox = dynamic_cast<TextBox*>(elements[8*8 + 2]);
+    msgbox->setText( s );
+
 }

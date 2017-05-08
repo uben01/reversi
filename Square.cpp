@@ -12,7 +12,6 @@ Square :: Square(Application* parent, const int& posx, const int& posy, const in
 {
     occupied = oc;
     owner = ow;
-
 }
 
 const void Square :: draw()

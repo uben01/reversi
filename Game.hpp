@@ -18,6 +18,9 @@ public:
     bool canAct();
     bool testElement(int, int);
 
+    bool countPoints();
+    void setMessage(string);
+
     void pp_add(int);
     void pp_clear();
     vector<int> get_pp();
