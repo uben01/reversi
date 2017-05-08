@@ -3,6 +3,7 @@
 #include "Game.hpp"
 #include "Square.hpp"
 #include "iostream"
+#include "stdlib.h"
 
 int XX;
 int YY;
@@ -42,14 +43,36 @@ void Game :: event_loop(event& ev)
     while(gin >> ev)
     {
         if(ev.type == ev_mouse && ev.button == btn_left)
+        {
+            pp_clear();
             for(Widget * w : elements)
             {
                 if(w->isOver(ev.pos_x, ev.pos_y))
                 {
                     w->handle(ev);
                     drawElements();
+                    if(!canAct())
+                    {
+                        /// egyik nem léphet
+                        changePlayer();
+
+                        if(!canAct())
+                        {
+                            exit(0);
+                            ///vége
+                        }
+                    }
+                    /// Jobb oldalra eredményjelzõ
                 }
             }
+        }
+        else if(ev.type == ev_mouse)
+        {
+            pp_clear();
+            int x = ev.pos_x/squareSize, y = ev.pos_y/squareSize;
+            testElement(x, y);
+            drawElements();
+        }
     }
 }
 void Game::changePlayer()
@@ -62,7 +85,7 @@ bool Game::getPlayer()
 }
 
 
-bool Game :: isOrderly(int p_x, int p_y, int x_dir, int y_dir, int depth)
+bool Game :: isOrderly(int p_x, int p_y, int x_dir, int y_dir, int depth, bool test)
 {
     p_x += x_dir;
     p_y += y_dir;
@@ -76,13 +99,60 @@ bool Game :: isOrderly(int p_x, int p_y, int x_dir, int y_dir, int depth)
         if(element->getOwner() == getPlayer()) return true;
         else
         {
-            bool last = isOrderly(p_x, p_y, x_dir, y_dir, depth + 1);
+            bool last = isOrderly(p_x, p_y, x_dir, y_dir, depth + 1, test);
             if(last)
             {
-                element->setOwner(getPlayer());
+                if(!test) element->setOwner(getPlayer());
+                else pp_add(p_y * 8 + p_x);
                 return true;
             }
         }
     }
     return false;
+}
+
+bool Game :: canAct()
+{
+    for(int x = 0; x < 8; x++)
+    {
+        for(int y = 0; y < 8; y++)
+        {
+            if(testElement(x, y)) return true;
+        }
+    }
+    return false;
+}
+
+bool Game :: testElement(int x, int y)
+{
+    Square* element = dynamic_cast<Square*>(elements[y * 8 + x]);
+    if(element && !element->isOccupied())
+    {
+        for(int i = -1; i <= 1; i++)
+        {
+            for(int j = -1; j <= 1; j++)
+            {
+                if(i != 0 || j != 0)
+                {
+                    if(isOrderly(x, y, i, j, 1, true)) return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+void Game :: pp_add(int a)
+{
+    possible_positions.push_back(a);
+}
+
+void Game :: pp_clear()
+{
+    possible_positions.clear();
+}
+
+vector<int> Game :: get_pp()
+{
+    return possible_positions;
 }
