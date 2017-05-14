@@ -3,14 +3,17 @@
 
 #include "Application.hpp"
 
+class Square;
+
 class Game : public Application
 {
+    bool multiPlayer;
     bool activePlayer;
     vector<int> possible_positions;
 public:
-    Game(const int&, const int&);
+    Game(const int&, const int&, const bool&);
 
-    void event_loop(event&);
+    virtual bool event_loop(event&);
     bool getPlayer();
     void changePlayer();
 
@@ -24,6 +27,8 @@ public:
     void pp_add(int);
     void pp_clear();
     vector<int> get_pp();
+
+    int getComputerMove(vector<Square>, int, bool, int);
 };
 
 #endif // GAME_HPP_INCLUDED

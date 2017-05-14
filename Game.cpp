@@ -11,8 +11,9 @@ int XX;
 int YY;
 
 
-Game :: Game(const int& xx, const int& yy)
+Game :: Game(const int& xx, const int& yy, const bool& mp)
 {
+    multiPlayer = mp;
     activePlayer = false;
     XX = xx;
     YY = yy;
@@ -39,59 +40,72 @@ Game :: Game(const int& xx, const int& yy)
 
 }
 
-void Game :: event_loop(event& ev)
+bool Game :: event_loop(event& ev)
 {
     gout << move_to(0,0)
          << color(125,125,125)
          << box(XX, YY);
 
-    countPoints();
-    drawElements();
-
     while(gin >> ev)
     {
-        if(ev.type == ev_mouse && ev.button == btn_left)
+        if(!multiPlayer && activePlayer)
         {
-            pp_clear();
+            vector<Square> table;
+            for( int i = 0; i < 8*8; i++ )
+            {
+                Square* element = dynamic_cast<Square*>(elements[i]);
+                if(element)
+                {
+                    table.push_back(*element);
+                }
+            }
+            elements[getComputerMove(table, 0, activePlayer, 0)]->handle(ev);
+            //changePlayer();
+
+        }
+        else if(ev.type == ev_mouse && ev.button == btn_left && canAct())
+        {
             for(Widget * w : elements)
             {
                 if(w->isOver(ev.pos_x, ev.pos_y))
                 {
+                    pp_clear();
                     w->handle(ev);
                     drawElements();
-                    if(!canAct())
-                    {
-                        string s = ((!activePlayer) ? "Feher" : "Fekete");
-                        string ns = ((activePlayer) ? "Feher" : "Fekete");
-                        string msg = s + " nem tud lepni\n" + ns + " kovetkezik";
-                        setMessage(msg);
 
-                        changePlayer();
-
-                        if(!canAct())
-                        {
-                            string s = ((countPoints()) ? "feher" : "fekete");
-                            string msg = "A jateknak vege, \n" + s + " nyert";
-                            setMessage(msg);
-                        }
-                    } else
-                    {
-                        string s = ((!activePlayer) ? "Feher" : "Fekete");
-                        string msg = s + " kovetkezik";
-                        setMessage(msg);
-                    }
                     countPoints();
                     break;
                 }
+
             }
         }
-        else if(ev.type == ev_mouse)
+        if(ev.type == ev_mouse)
         {
+            string s = ((!activePlayer) ? "Feher" : "Fekete");
+            string msg = s + " kovetkezik";
+            setMessage(msg);
+            if(!canAct())
+            {
+                s = ((!activePlayer) ? "Feher" : "Fekete");
+                string ns = ((activePlayer) ? "Feher" : "Fekete");
+                msg = s + " nem tud lepni\n" + ns + " kovetkezik";
+                setMessage(msg);
+
+                changePlayer();
+
+                if(!canAct())
+                {
+                    s = ((countPoints()) ? "feher" : "fekete");
+                    msg = "A jateknak vege, \n" + s + " nyert";
+                    setMessage(msg);
+                }
+            }
             pp_clear();
             int x = ev.pos_x/squareSize, y = ev.pos_y/squareSize;
             if(x < 8 && x >= 0 && y < 8 && y >= 0) testElement(x, y);
             drawElements();
         }
+
     }
 }
 void Game::changePlayer()
@@ -212,5 +226,56 @@ void Game :: setMessage(string s)
 {
     TextBox* msgbox = dynamic_cast<TextBox*>(elements[8*8 + 2]);
     msgbox->setText( s );
+}
+
+///////////////////////////////////////
+
+int Game :: getComputerMove(vector<Square> table, int value, bool player, int depth)
+{
+    /// Activeplayer az mindig a gép, mert õ hívja meg, a player, az aktuálisan szimulált lépés
+    vector<pair<int, int>> validMoves;
+    for(int i = 0; i < 8; i++)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            if(testElement(i, j)) validMoves.push_back({i,j});
+        }
+    }
+
+    pp_clear();
+
+    int v_step;
+    int v_max = -100000;
+    int v_pos;
+
+    if(!validMoves.size() || depth == 5)
+    {
+        return value;
+    }
+
+    for (int i = 0; i < validMoves.size(); i++)
+    {
+        int pos = validMoves[i].first + validMoves[i].second*8;
+
+        v_step = value;
+        testElement(validMoves[i].first, validMoves[i].second);
+
+        if(activePlayer == player) v_step += possible_positions.size();
+        else v_step -= possible_positions.size();
+
+        vector<Square> table_mod = table;
+        table_mod[pos].setOccupied();
+        table_mod[pos].setOwner(player);
+        int v_this = getComputerMove(table_mod, v_step, !player, depth+1);
+        if(v_this > v_max)
+        {
+            v_max = v_this;
+            v_pos = pos;
+        }
+    }
+    if( depth == 0 )
+    {
+        return v_pos;
+    }
 
 }
