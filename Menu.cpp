@@ -14,18 +14,15 @@ Menu :: Menu()
 
 void Menu::startSinglePlayer()
 {
-    //cout << "SinglePlayer funkcio inditasa";
+    cout << "SinglePlayer funkcio inditasa";
     over = true;
-    multi_player = false;
 }
 void Menu::startMultiPlayer()
 {
-    //cout << "MultiPlayer funkcio inditasa";
-    over = true;
-    multi_player = true;
+    cout << "MultiPlayer funkcio inditasa";
 }
 
-bool Menu :: event_loop(event & ev)
+void Menu :: event_loop(event & ev)
 {
     drawElements();
 
@@ -41,5 +38,4 @@ bool Menu :: event_loop(event & ev)
             }
         }
     }
-    return multi_player;
 }

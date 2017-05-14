@@ -6,11 +6,10 @@
 class Menu : public Application
 {
     bool over = false;
-    bool multi_player = false;
 public:
     Menu();
 
-    bool event_loop(event&);
+    void event_loop(event&);
 
     void startSinglePlayer();
     void startMultiPlayer();

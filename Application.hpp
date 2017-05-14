@@ -20,7 +20,7 @@ public:
     void add(Widget*);
     void drawElements();
 
-    virtual bool event_loop(event&) = 0;
+    virtual void event_loop(event&) = 0;
 
 };
 

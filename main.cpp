@@ -16,9 +16,9 @@ int main()
     event ev;
 
     Menu* menu = new Menu();
-    bool mp = menu->event_loop(ev);
+    menu->event_loop(ev);
     delete menu;
-    Game* game = new Game(XX, YY, mp);
+    Game* game = new Game(XX, YY);
     game->event_loop(ev);
 
 
