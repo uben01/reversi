@@ -48,7 +48,7 @@ bool Game :: event_loop(event& ev)
 
     while(gin >> ev)
     {
-        if(!multiPlayer && activePlayer)
+        if(!multiPlayer && activePlayer && canAct())
         {
             vector<Square> table;
             for( int i = 0; i < 8*8; i++ )
@@ -65,46 +65,41 @@ bool Game :: event_loop(event& ev)
         }
         else if(ev.type == ev_mouse && ev.button == btn_left)
         {
+            int x = ev.pos_x/squareSize, y = ev.pos_y/squareSize;
+            if(x < 8 && x >= 0 && y < 8 && y >= 0)
+            {
+                pp_clear();
+                elements[y * 8 + x]->handle(ev);
+                drawElements();
+
+                countPoints();
+            }
+
+
+        }
+        else if(ev.type == ev_mouse)
+        {
+            string s = ((!activePlayer) ? "Feher" : "Fekete");
+            string msg = s + " kovetkezik";
+            setMessage(msg);
 
             if(!canAct())
             {
-                string s = ((!activePlayer) ? "Feher" : "Fekete");
+                s = ((!activePlayer) ? "Feher" : "Fekete");
                 string ns = ((activePlayer) ? "Feher" : "Fekete");
-                string msg = s + " nem tud lepni\n" + ns + " kovetkezik";
+                msg = s + " nem tud lepni\n" + ns + " kovetkezik";
                 setMessage(msg);
 
                 changePlayer();
 
                 if(!canAct())
                 {
-                    string s = ((countPoints()) ? "feher" : "fekete");
-                    string msg = "A jateknak vege, \n" + s + " nyert";
+                    s = ((countPoints()) ? "feher" : "fekete");
+                    msg = "A jateknak vege, \n" + s + " nyert";
                     setMessage(msg);
                 }
             }
-            else
-            {
-                string s = ((!activePlayer) ? "Feher" : "Fekete");
-                string msg = s + " kovetkezik";
-                setMessage(msg);
-                for(Widget * w : elements)
-                {
-                    if(w->isOver(ev.pos_x, ev.pos_y))
-                    {
-                        pp_clear();
-                        w->handle(ev);
-                        drawElements();
 
-                        countPoints();
-                        break;
-                    }
-
-                }
-            }
-
-        }
-        else if(ev.type == ev_mouse)
-        {
             pp_clear();
             int x = ev.pos_x/squareSize, y = ev.pos_y/squareSize;
             if(x < 8 && x >= 0 && y < 8 && y >= 0) testElement(x, y);
@@ -254,6 +249,10 @@ int Game :: getComputerMove(vector<Square> table, int value, bool player, int de
     int v_max = -100000;
     int v_pos;
 
+    int v_this;
+
+    int pos;
+
     if(!validMoves.size() || depth == 5)
     {
         return value;
@@ -261,7 +260,7 @@ int Game :: getComputerMove(vector<Square> table, int value, bool player, int de
 
     for (int i = 0; i < validMoves.size(); i++)
     {
-        int pos = validMoves[i].first + validMoves[i].second*8;
+        pos = validMoves[i].first + validMoves[i].second*8;
 
         v_step = value;
         testElement(validMoves[i].first, validMoves[i].second);
@@ -272,7 +271,7 @@ int Game :: getComputerMove(vector<Square> table, int value, bool player, int de
         vector<Square> table_mod = table;
         table_mod[pos].setOccupied();
         table_mod[pos].setOwner(player);
-        int v_this = getComputerMove(table_mod, v_step, !player, depth+1);
+        v_this = getComputerMove(table_mod, v_step, !player, depth+1);
         if(v_this > v_max)
         {
             v_max = v_this;
