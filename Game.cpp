@@ -27,16 +27,16 @@ Game :: Game(const int& xx, const int& yy, const bool& mp)
                 oc = true;
                 if((i == 4 && j == 3) || (i == 3 && j == 4)) ow = true;
             }
-            Widget* e = new Square(this, i * squareSize, j * squareSize, squareSize, squareSize, oc, ow);
+            new Square(this, i * squareSize, j * squareSize, squareSize, squareSize, oc, ow);
         }
     }
 
 
     ////////////////////////////////////////////
-    Widget* white_player_score = new TextBox(this, 800, 100, 200, 100, "", new rgb(0,0,0));
-    Widget* dark_player_score = new TextBox(this, 800, 200, 200, 100, "", new rgb(255,255,255));
+    new TextBox(this, 800, 100, 200, 100, "", new rgb(0,0,0));
+    new TextBox(this, 800, 200, 200, 100, "", new rgb(255,255,255));
 
-    Widget* message = new TextBox(this, 800, 600, 200, 100, "A jatek elkezdodott\nFeher kezd", new rgb(255,255,255));
+    new TextBox(this, 800, 600, 200, 100, "A jatek elkezdodott\nFeher kezd", new rgb(255,255,255));
 
 }
 
@@ -63,43 +63,48 @@ bool Game :: event_loop(event& ev)
             //changePlayer();
 
         }
-        else if(ev.type == ev_mouse && ev.button == btn_left && canAct())
+        else if(ev.type == ev_mouse && ev.button == btn_left)
         {
-            for(Widget * w : elements)
-            {
-                if(w->isOver(ev.pos_x, ev.pos_y))
-                {
-                    pp_clear();
-                    w->handle(ev);
-                    drawElements();
 
-                    countPoints();
-                    break;
-                }
-
-            }
-        }
-        if(ev.type == ev_mouse)
-        {
-            string s = ((!activePlayer) ? "Feher" : "Fekete");
-            string msg = s + " kovetkezik";
-            setMessage(msg);
             if(!canAct())
             {
-                s = ((!activePlayer) ? "Feher" : "Fekete");
+                string s = ((!activePlayer) ? "Feher" : "Fekete");
                 string ns = ((activePlayer) ? "Feher" : "Fekete");
-                msg = s + " nem tud lepni\n" + ns + " kovetkezik";
+                string msg = s + " nem tud lepni\n" + ns + " kovetkezik";
                 setMessage(msg);
 
                 changePlayer();
 
                 if(!canAct())
                 {
-                    s = ((countPoints()) ? "feher" : "fekete");
-                    msg = "A jateknak vege, \n" + s + " nyert";
+                    string s = ((countPoints()) ? "feher" : "fekete");
+                    string msg = "A jateknak vege, \n" + s + " nyert";
                     setMessage(msg);
                 }
             }
+            else
+            {
+                string s = ((!activePlayer) ? "Feher" : "Fekete");
+                string msg = s + " kovetkezik";
+                setMessage(msg);
+                for(Widget * w : elements)
+                {
+                    if(w->isOver(ev.pos_x, ev.pos_y))
+                    {
+                        pp_clear();
+                        w->handle(ev);
+                        drawElements();
+
+                        countPoints();
+                        break;
+                    }
+
+                }
+            }
+
+        }
+        else if(ev.type == ev_mouse)
+        {
             pp_clear();
             int x = ev.pos_x/squareSize, y = ev.pos_y/squareSize;
             if(x < 8 && x >= 0 && y < 8 && y >= 0) testElement(x, y);
@@ -107,6 +112,7 @@ bool Game :: event_loop(event& ev)
         }
 
     }
+    return true;
 }
 void Game::changePlayer()
 {
