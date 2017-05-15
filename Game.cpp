@@ -59,7 +59,9 @@ bool Game :: event_loop(event& ev)
                     table.push_back(*element);
                 }
             }
-            elements[getComputerMove(table, 0, activePlayer, 0)]->handle(ev);
+            int step = getComputerMove(table, 0, activePlayer, 0);
+            if(step != -1) elements[step]->handle(ev);
+            else exit(-1);
             //changePlayer();
 
         }
@@ -207,7 +209,7 @@ bool Game :: countPoints()
         }
     }
     TextBox* white_player_score = dynamic_cast<TextBox*>(elements[8*8]);
-    TextBox* dark_player_score = dynamic_cast<TextBox*>(elements[8*8 + 1]);
+    TextBox* dark_player_score  = dynamic_cast<TextBox*>(elements[8*8 + 1]);
 
     stringstream ss;
     string score;
@@ -239,7 +241,7 @@ int Game :: getComputerMove(vector<Square> table, int value, bool player, int de
     {
         for(int j = 0; j < 8; j++)
         {
-            if(testElement(i, j)) validMoves.push_back({i,j});
+            if(testElement(i, j)) validMoves.push_back({i,j});  /// Ez nem jó, a jelenlegi táblát teszteli, nem az átvettetet
         }
     }
 
@@ -258,8 +260,9 @@ int Game :: getComputerMove(vector<Square> table, int value, bool player, int de
         return value;
     }
 
-    for (int i = 0; i < validMoves.size(); i++)
+    for (unsigned int i = 0; i < validMoves.size(); i++)
     {
+        pp_clear();
         pos = validMoves[i].first + validMoves[i].second*8;
 
         v_step = value;
@@ -282,5 +285,5 @@ int Game :: getComputerMove(vector<Square> table, int value, bool player, int de
     {
         return v_pos;
     }
-
+    return -1;
 }

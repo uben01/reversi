@@ -7,20 +7,18 @@
 
 Menu :: Menu()
 {
-    Widget* SinglePlayerButton = new Button(this, 1000/2 - 200 / 2,  50, 200, 100, "Egyjátékos mód",     [&](){this->startSinglePlayer();});
-    Widget* MultiPlayerButton  = new Button(this, 1000/2 - 200 / 2, 250, 200, 100, "Többjátékos mód",    [&](){this->startMultiPlayer();});
-    Widget* ExitButton         = new Button(this, 1000/2 - 200 / 2, 450, 200, 100, "Kilépés",            [](){exit(0);});
+    new Button(this, 1000/2 - 200 / 2,  50, 200, 100, "Egyjátékos mód",     [&](){this->startSinglePlayer();});
+    new Button(this, 1000/2 - 200 / 2, 250, 200, 100, "Többjátékos mód",    [&](){this->startMultiPlayer();});
+    new Button(this, 1000/2 - 200 / 2, 450, 200, 100, "Kilépés",            [](){exit(0);});
 }
 
 void Menu::startSinglePlayer()
 {
-    //cout << "SinglePlayer funkcio inditasa";
     over = true;
     multi_player = false;
 }
 void Menu::startMultiPlayer()
 {
-    //cout << "MultiPlayer funkcio inditasa";
     over = true;
     multi_player = true;
 }

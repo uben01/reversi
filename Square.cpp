@@ -50,9 +50,9 @@ const void Square :: draw()
             c = new rgb(255,255,255);
         }
         c->setcolor();
-        for(int i = 0; i <  squareSize; i++)
+        for(int i = 0; i < squareSize; i++)
         {
-            for (int j = 0; j <  squareSize; j++)
+            for (int j = 0; j < squareSize; j++)
             {
                 if( pow(i - (_sizex) / 2, 2) + pow(j - (_sizey) / 2, 2) <= squareSize*10 )
                 {
